@@ -1,0 +1,37 @@
+import fetch from 'node-fetch';
+import Command from '../../Library/Command.js'
+import { getBuffer } from '../../Library/function.js'
+
+const command = new Command('repo', {
+    description: "Get the base repo of the bot",
+    aliases: ['script'],
+    category: 'core',
+    usage: 'repo'
+});
+
+export default async function handler(m, { conn }) {
+    try {
+        const image = await getBuffer('https://i.pinimg.com/564x/3b/d8/bb/3bd8bb87812f4af49d6a52b7a2394c6d.jpg');
+        const response = await fetch('https://api.github.com/repos/Debanjan-San/krypton-WhatsappBot');
+        if (!response.ok) throw new Error(`GitHub API error: ${response.statusText}`);
+        const result = await response.json();
+
+        let caption = '';
+        caption += `*${result.name}* ✨\n\n`;
+        caption += `✍🏻 *Author: ${result.owner.login}*\n`;
+        caption += `⭐ *Stars: ${result.stargazers_count}*\n`;
+        caption += `🍴 *Forks: ${result.forks_count}*\n`;
+        caption += `⚠️ *Issues: ${result.open_issues_count}*\n`;
+        caption += `🌐 *Visibility: ${result.visibility}*\n`;
+        caption += `💠 *Language: ${result.language}*\n`;
+        caption += `🛡️ *License: ${result.license ? result.license.name : 'No License'}*\n`;
+        caption += `⚙️ *Repo Link: ${result.html_url}*`;
+
+        await conn.sendFile(m.chat, image, 'repo.jpg', caption, m);
+    } catch (error) {
+        console.error(error);
+        await conn.reply('An error occurred while fetching the repository information. Please try again later.');
+    }
+}
+
+Object.assign(handler, command.toHandlerObject());

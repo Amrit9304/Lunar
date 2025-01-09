@@ -1,0 +1,70 @@
+import chalk from 'chalk';
+import dotenv from 'dotenv';
+import Command from '../../Library/Command.js';
+
+dotenv.config();
+
+const recipientQuasar = `${process.env.QUASAR}@s.whatsapp.net`;
+const recipientNumber = `${process.env.NUMBER}@s.whatsapp.net`;
+
+const command = new Command('bot', {
+  description: "Checks other bot status",
+  category: 'core',
+  usage: 'bot',
+});
+
+export default async function handler(m, { conn }) {
+  try {
+    const message = "#active";
+
+    await conn.sendMessage(recipientQuasar, { text: message });
+    await conn.sendMessage(recipientNumber, { text: message });
+
+    const [isQuasarActive, isNumberActive] = await Promise.all([
+      waitForResponse(conn, recipientQuasar, 3000),
+      waitForResponse(conn, recipientNumber, 3000),
+    ]);
+
+    let text = ``;
+    text += `LUNAR - ${isNumberActive ? '🟩 Active' : '🟥 Inactive'}\n`;
+    text += `QUASAR - ${isQuasarActive ? '🟩 Active' : '🟥 Inactive'}\n`;
+
+    await conn.sendMessage(m.chat, { text: text });
+  } catch (err) {
+    console.error(chalk.red('Error handling message:', err));
+  }
+}
+
+async function waitForResponse(conn, recipientNumber, timeout) {
+  return new Promise((resolve) => {
+    let responseDetected = false;
+
+    const onMessage = ({ messages }) => {
+      messages.forEach((msg) => {
+        const from = msg.key.remoteJid;
+        const sender = msg.key.fromMe;
+        const log = msg.message?.conversation;
+
+        if (from === recipientNumber && sender) {
+          console.log(`Bot responded to ${recipientNumber}: ${log}`);
+          responseDetected = true;
+          resolve(true);
+          cleanup();
+        }
+      });
+    };
+
+    const cleanup = () => {
+      conn.ev.off('messages.upsert', onMessage);
+    };
+
+    conn.ev.on('messages.upsert', onMessage);
+
+    setTimeout(() => {
+      if (!responseDetected) resolve(false);
+      cleanup();
+    }, timeout);
+  });
+}
+
+Object.assign(handler, command.toHandlerObject());
