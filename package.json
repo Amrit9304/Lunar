@@ -14,6 +14,7 @@
     "@shineiichijo/canvas-chan": "^1.0.1",
     "@shineiichijo/marika": "^2.0.6",
     "@vitalets/google-translate-api": "^9.2.0",
+    "@whiskeysockets/baileys": "^6.7.9",
     "api-dylux": "^1.8.5",
     "aptoide-scraper": "^1.0.1",
     "awesome-phonenumber": "^3.4.0",
