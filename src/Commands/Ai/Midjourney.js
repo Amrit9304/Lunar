@@ -12,7 +12,7 @@ const style = '```'
 
 const NSFW_WORDS = [
     "boobs", "pussy", "naked", "ass", "asshole", "panty", "nudes",
-	"porn", "xxx", "adult", "sex", "nude", "naked", "explicit", 
+    "porn", "xxx", "adult", "sex", "nude", "naked", "explicit", 
     "erotic", "hardcore", "bdsm", "cum", "dick", "blowjob", "doggystyle",
     "gore", "intimate", "strip", "masturbation", "footjob",
     "lingerie", "provocative", "incest", "escort", "prostitute", 
@@ -24,15 +24,6 @@ export default async function handler(m, { conn, usedPrefix, command, args }) {
     let username = conn.getName(who);
 
     const userTag = `@${m.sender.split('@')[0]}`
-	
-	const containsNSFW = NSFW_WORDS.some(word => prompt.toLowerCase().includes(word));
-    if (containsNSFW) {
-        return conn.reply(
-            m.chat,
-            `Sorry ${userTag}, NSFW content is not allowed.`,
-            m
-        );
-    }
 
     if (!args.length) {
         return conn.reply(m.chat, `Please provide a prompt for image generation. Usage: ${usedPrefix}${command} <prompt>`, m);
