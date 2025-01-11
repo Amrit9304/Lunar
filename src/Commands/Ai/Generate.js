@@ -22,8 +22,7 @@ const NSFW_WORDS = [
 export default async function handler(m, { conn, usedPrefix, command, args }) {
     let who = m.fromMe ? conn.user.jid : m.sender;
     let username = conn.getName(who);
-	
-	const userTag = `@${m.sender.split('@')[0]}`
+    const userTag = `@${m.sender.split('@')[0]}`
 
     if (!args.length) {
         return conn.reply(m.chat, `Please provide a prompt for image generation. Usage: ${usedPrefix}${command} <prompt>`, m);
