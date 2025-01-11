@@ -30,15 +30,6 @@ export default async function handler(m, { conn, usedPrefix, command, args }) {
     }
 
     const prompt = args.join(' ');
-	
-	const containsNSFW = NSFW_WORDS.some(word => prompt.toLowerCase().includes(word));
-    if (containsNSFW) {
-        return conn.reply(
-            m.chat,
-            `Sorry ${userTag}, NSFW content is not allowed.`,
-            m
-        );
-    }
 
     const { imageUrl, usedPrompt } = await generate(prompt);
 
