@@ -249,38 +249,38 @@ const interval = setInterval(() => {
 
 function purgeSession() {
   let prekey = [];
-  const directorio = readdirSync('./session');
+  const directorio = readdirSync('./sessions');
   const filesFolderPreKeys = directorio.filter((file) => {
     return file.startsWith('pre-key-');
   });
   prekey = [...prekey, ...filesFolderPreKeys];
   filesFolderPreKeys.forEach((files) => {
-    unlinkSync(`./session/${files}`);
+    unlinkSync(`./sessions/${files}`);
   });
 }
 
 
 function purgeOldFiles() {
-  const directories = ['./session/'];
+  const directories = ['./sessions/'];
   const oneHourAgo = Date.now() - (60 * 60 * 1000);
-  
   directories.forEach((dir) => {
-      if (!existsSync(dir)) {
-          console.error(`Directory does not exist: ${dir}`);
-          return;
-      }
-
-      const files = readdirSync(dir);
+    readdirSync(dir, (err, files) => {
+      if (err) throw err;
       files.forEach((file) => {
-          const filePath = path.join(dir, file);
-          const stats = statSync(filePath);
+        const filePath = path.join(dir, file);
+        stat(filePath, (err, stats) => {
+          if (err) throw err;
           if (stats.isFile() && stats.mtimeMs < oneHourAgo && file !== 'creds.json') {
-              unlinkSync(filePath);
+            unlinkSync(filePath, (err) => {
+              if (err) throw err;
               console.log(`File ${file} deleted successfully`);
+            });
           } else {
-              console.log(`File ${file} not deleted`);
+            console.log(`File ${file} not deleted`);
           }
+        });
       });
+    });
   });
 }
 
